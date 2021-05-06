@@ -36,6 +36,7 @@ namespace Шоколадка2
             Thread.Sleep(300); // ждем 300 мс
             int computerX = 0;
             int computerY = 0;
+
             // если ход компьютера и игрок ещё не нажал на ячейку,
             // следующую по диагонали от ядовитой, то на нее нажимает компьютер
             if (isComputerFirstMove && computerI != row - 2 && computerJ != 1)
@@ -55,6 +56,14 @@ namespace Шоколадка2
                 {
                     computerX = column - computerI - 1;
                     computerY = row - computerJ - 1;
+
+                    if (((DataGridView)gameView)[computerX, computerY].Style.BackColor == Color.Pink)
+                    {
+                        if (computerX == column - 1)
+                            computerX++;
+                        else
+                            computerY++;
+                    }
                 }
             }
             else if (isComputerFirstMove && computerI == 6 && computerJ == 7 || computerJ == 6 || computerJ == 5 || computerJ == 4 || computerJ == 3 || computerJ == 2)
@@ -66,8 +75,16 @@ namespace Шоколадка2
                 // Закрашивание заркальных ячеек
                 if (((DataGridView)gameView)[computerX, computerY].Style.BackColor == Color.Pink)
                 {
-                    computerX = column - computerI - 1;
-                    computerY = row - computerJ - 1;
+                    computerX = column - computerI-1 ;
+                    computerY = row - computerJ-1 ;
+
+                    if (((DataGridView)gameView)[computerX, computerY].Style.BackColor == Color.Pink)
+                    {
+                        if (computerX == column - 1)
+                            computerX++;
+                        else
+                            computerY++;
+                    }
                 }
             }
 
@@ -104,12 +121,14 @@ namespace Шоколадка2
                     if (computerX == column - 1)
                         computerX++;
                     else
-                        computerY++;                  
+                        computerY++;
                 }
                 // если компьютер нажал отравленную ячейку - выводим сообщение
                 if (computerY == 7 && computerX == 0)
                 {
                     MessageBox.Show("Вы победили!");
+                    isComputerFirstMove = false;
+                    isComputer = false;                    
                 }
           
                 isComputerFirstMove = false;
@@ -119,13 +138,13 @@ namespace Шоколадка2
                 return;
             for (int y = 0; y <= computerY; y++)
                 for (int x = computerX; x < column; x++)
-                    ((DataGridView)gameView)[x, y].Style.BackColor = Color.Pink;            
+                    ((DataGridView)gameView)[x, y].Style.BackColor = Color.Pink;                      
         }
 
         private void gameView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int i = e.RowIndex, j = e.ColumnIndex;
-            
+
             for (int y = 0; y <= i; y++)
                 for (int x = j; x < column; x++)
                     // Закрашиваем все ячейки находящиеся выше и правее активной
@@ -139,8 +158,7 @@ namespace Шоколадка2
                 computerJ = j;
                 // создаем новый поток для реалистичности
                 Thread computerMove = new Thread(ComputerMove);
-                computerMove.Start(gameView);   
-                
+                computerMove.Start(gameView);
             }
 
             Win();
@@ -155,7 +173,7 @@ namespace Шоколадка2
             if (poison == gameView.Rows[row - 1].Cells[0])
             {
                 MessageBox.Show("Вы проиграли!");
-            }
+            }           
         }
 
         // Обработчик кнопки Игрок против Игрока
